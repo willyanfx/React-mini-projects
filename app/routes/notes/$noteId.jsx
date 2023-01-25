@@ -24,6 +24,13 @@ export async function loader({ params }) {
   return selectedNote;
 }
 
+export function meta({ data }) {
+  return {
+    title: data.title,
+    description: data.content,
+  };
+}
+
 export default function NoteDetailsPage() {
   const note = useLoaderData();
   return (

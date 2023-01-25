@@ -48,6 +48,12 @@ export function CatchBoundary() {
   );
 }
 
+export function meta() {
+  return {
+    title: "All notes",
+  };
+}
+
 export default function NotesPage() {
   const notes = useLoaderData();
   return (
