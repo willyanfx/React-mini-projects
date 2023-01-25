@@ -26,7 +26,7 @@ export async function action({ request }) {
 
 export async function loader() {
   const notes = await getStoredNotes();
-  if (!notes || notes.length === 3) {
+  if (!notes || notes.length === 0) {
     throw json(
       { message: "Could not find any notes" },
       {
