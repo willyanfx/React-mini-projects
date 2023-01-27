@@ -1,4 +1,5 @@
 import { useLoaderData } from "@remix-run/react";
+import ExpenseForm from "~/components/expenses/ExpenseForm";
 
 export async function loader({ params }) {
   const id = params["id"];
@@ -10,8 +11,7 @@ export default function UpdatePage() {
   const id = useLoaderData();
   return (
     <>
-      <h1>{id} Update Page</h1>
-      <p>text</p>
+      <ExpenseForm />
     </>
   );
 }
