@@ -17,10 +17,10 @@ export default function ExpensesLayout() {
             <FaPlus />
             <span>Add Expenses</span>
           </Link>
-          <Link to='raw'>
+          <a target='_blank' rel='noopener noreferrer' href='/expenses/raw'>
             <FaDownload />
             <span>Raw Expenses</span>
-          </Link>
+          </a>
         </section>
         <ExpensesList expenses={DUMMY_EXPENSES} />
       </main>
