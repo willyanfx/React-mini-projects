@@ -8,7 +8,6 @@ import {
 } from "@remix-run/react";
 
 import styles from "~/styles/shared.css";
-import MainHeader from "./components/navigation/MainHeader";
 
 export function links() {
   return [{ rel: "stylesheet", href: styles }];
@@ -38,9 +37,6 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <header>
-          <MainHeader />
-        </header>
         <Outlet />
         <ScrollRestoration />
         <Scripts />
