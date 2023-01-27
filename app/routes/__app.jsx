@@ -5,6 +5,6 @@ export function links() {
   return [{ rel: "stylesheet", href: expensesStyles }];
 }
 
-export default function ExpensesAppLayout() {
+export default function MarketingLayout() {
   return <Outlet />;
 }
