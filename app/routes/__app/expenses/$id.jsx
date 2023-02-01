@@ -25,7 +25,7 @@ export async function action({ params, request }) {
     return redirect("/expenses");
   } else {
     await deleteExpense(expenseId);
-    return redirect("/expenses");
+    return null;
   }
 }
 
