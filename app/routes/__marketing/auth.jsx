@@ -1,6 +1,8 @@
 import AuthForm from "~/components/auth/AuthForm";
 import { validateCredentials } from "~/data/validation.server";
+import { signup } from "~/data/auth.server";
 import authStyles from "~/styles/auth.css";
+
 export function links() {
   return [{ rel: "stylesheet", href: authStyles }];
 }
@@ -18,8 +20,16 @@ export async function action({ request }) {
     return error;
   }
 
-  if (authMode === "login") {
-  } else {
+  try {
+    if (authMode === "login") {
+      // return await login(credentials);
+    } else {
+      return await signup(credentials);
+    }
+  } catch (error) {
+    if (error.status === 422) {
+      return { credentials: error.message };
+    }
   }
 }
 
