@@ -5,9 +5,9 @@ import { requiredUserSession } from "~/data/auth.server";
 import { getExpenses } from "../../data/expenses.server";
 
 export async function loader({ request }) {
-  await requiredUserSession(request);
+  const userId = await requiredUserSession(request);
 
-  const expenses = await getExpenses();
+  const expenses = await getExpenses(userId);
 
   // if (!expenses || expenses.length === 0) {
   //   throw json(

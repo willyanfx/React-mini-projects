@@ -4,8 +4,10 @@ import ExpenseForm from "~/components/expenses/ExpenseForm";
 import Modal from "~/components/util/Modal";
 import { addExpense } from "~/data/expenses.server";
 import { validateExpenseInput } from "~/data/validation.server";
+import { requiredUserSession } from "~/data/auth.server";
 
 export async function action({ request }) {
+  const userId = await requiredUserSession(request);
   const formData = await request.formData();
   const expenseData = Object.fromEntries(formData);
 
@@ -15,7 +17,7 @@ export async function action({ request }) {
     return error;
   }
 
-  await addExpense(expenseData);
+  await addExpense(expenseData, userId);
 
   return redirect("/expenses");
 }
