@@ -2,7 +2,6 @@ import AuthForm from "~/components/auth/AuthForm";
 import { validateCredentials } from "~/data/validation.server";
 import { signup, login } from "~/data/auth.server";
 import authStyles from "~/styles/auth.css";
-import { redirect } from "@remix-run/node";
 
 export function links() {
   return [{ rel: "stylesheet", href: authStyles }];

@@ -32,6 +32,31 @@ function errorMessage(msg, code) {
   throw error;
 }
 
+export async function getUserFromSession(request) {
+  const session = await sessionStorage.getSession(
+    request.headers.get("Cookie")
+  );
+
+  const userId = session.get("userId");
+
+  if (!userId) {
+    return null;
+  }
+
+  return userId;
+}
+
+export async function destroyUserSession(request) {
+  const session = await sessionStorage.getSession(
+    request.headers.get("Cookie")
+  );
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": await sessionStorage.destroySession(session),
+    },
+  });
+}
+
 export async function signup({ email, password }) {
   const existingUser = await prisma.user.findFirst({ where: { email } });
 
@@ -60,8 +85,6 @@ export async function login({ email, password }) {
   if (!passwordCorrect) {
     errorMessage("Could not login you in.", 401);
   }
-
-  console.log("USER:::", existingUser.id);
 
   return createUserSession(existingUser.id, "/expenses");
 }
