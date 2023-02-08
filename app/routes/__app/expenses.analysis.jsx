@@ -4,8 +4,10 @@ import { getExpenses } from "../../data/expenses.server";
 import { json } from "@remix-run/node";
 import Error from "~/components/util/Error";
 import { Link, Outlet, useCatch, useLoaderData } from "@remix-run/react";
+import { requiredUserSession } from "~/data/auth.server";
 
-export async function loader() {
+export async function loader({ request }) {
+  await requiredUserSession(request);
   const expenses = await getExpenses();
 
   if (!expenses || expenses.length === 0) {

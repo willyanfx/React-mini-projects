@@ -57,6 +57,14 @@ export async function destroyUserSession(request) {
   });
 }
 
+export async function requiredUserSession(request) {
+  const userId = await getUserFromSession(request);
+
+  if (!userId) {
+    throw redirect("/auth?mode=login");
+  }
+}
+
 export async function signup({ email, password }) {
   const existingUser = await prisma.user.findFirst({ where: { email } });
 
