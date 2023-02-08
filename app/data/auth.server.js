@@ -14,6 +14,18 @@ const sessionStorage = createCookieSessionStorage({
   },
 });
 
+async function createUserSession(userId, redirectPath = "/") {
+  const session = await sessionStorage.getSession();
+  session.set("userId", userId);
+
+  console.log("Cookie:::", sessionStorage.commitSession(session));
+  return redirect(redirectPath, {
+    headers: {
+      "Set-Cookie": await sessionStorage.commitSession(session),
+    },
+  });
+}
+
 function errorMessage(msg, code) {
   const error = new Error(msg);
   error.status = code;
@@ -29,10 +41,11 @@ export async function signup({ email, password }) {
 
   const passwordHash = await hash(password, 12);
 
-  await prisma.user.create({
+  const user = await prisma.user.create({
     data: { email: email, password: passwordHash },
   });
-  return redirect("/expenses");
+
+  return createUserSession(user.id, "/expenses");
 }
 
 export async function login({ email, password }) {
@@ -47,4 +60,8 @@ export async function login({ email, password }) {
   if (!passwordCorrect) {
     errorMessage("Could not login you in.", 401);
   }
+
+  console.log("USER:::", existingUser.id);
+
+  return createUserSession(existingUser.id, "/expenses");
 }
