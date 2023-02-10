@@ -3,7 +3,7 @@ import ExpenseStatistics from "~/components/expenses/ExpenseStatistics";
 import { getExpenses } from "../../data/expenses.server";
 import { json } from "@remix-run/node";
 import Error from "~/components/util/Error";
-import { Link, Outlet, useCatch, useLoaderData } from "@remix-run/react";
+import { useCatch, useLoaderData } from "@remix-run/react";
 import { requiredUserSession } from "~/data/auth.server";
 
 export async function loader({ request }) {
