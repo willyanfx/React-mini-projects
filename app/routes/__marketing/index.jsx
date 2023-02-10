@@ -8,6 +8,8 @@ export function meta() {
   };
 }
 
+export const handle = { disabledJS: true };
+
 export default function Index() {
   return (
     <main>

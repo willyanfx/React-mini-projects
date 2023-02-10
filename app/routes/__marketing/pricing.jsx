@@ -25,6 +25,8 @@ export function headers({ actionHeaders, loaderHeaders, parentHeaders }) {
   };
 }
 
+export const handle = { disabledJS: true };
+
 export default function PricingPage() {
   return (
     <main id='pricing'>

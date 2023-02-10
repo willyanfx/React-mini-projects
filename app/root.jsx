@@ -7,6 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
   useCatch,
+  useMatches,
 } from "@remix-run/react";
 import Error from "./components/util/Error";
 
@@ -17,6 +18,9 @@ export function links() {
 }
 
 function Document({ title, children }) {
+  const matches = useMatches();
+
+  const disabledJS = matches.some((match) => match.handle?.disabledJS);
   return (
     <html lang='en'>
       <head>
@@ -37,7 +41,8 @@ function Document({ title, children }) {
       <body>
         {children}
         <ScrollRestoration />
-        <Scripts />
+        {!disabledJS && <Scripts />}
+
         <LiveReload />
       </body>
     </html>
