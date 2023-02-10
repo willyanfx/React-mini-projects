@@ -77,7 +77,7 @@ export function ErrorBoundary({ error }) {
 
 export const meta = () => ({
   charset: "utf-8",
-  title: "My Notes",
+  title: "My Expenses",
   viewport: "width=device-width,initial-scale=1",
 });
 

@@ -5,6 +5,16 @@ import Modal from "~/components/util/Modal";
 import { deleteExpense, updateExpense } from "~/data/expenses.server";
 import { validateExpenseInput } from "~/data/validation.server";
 
+export function meta({ params, location, data, parentsData }) {
+  const expense = parentsData["routes/__app/expenses"].find(
+    (expense) => expense.id === params.id
+  );
+  return {
+    title: expense.title,
+    description: "update expense",
+  };
+}
+
 export async function action({ params, request }) {
   const expenseId = params.id;
 
