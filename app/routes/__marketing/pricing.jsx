@@ -19,6 +19,12 @@ const PRICING_PLANS = [
   },
 ];
 
+export function headers({ actionHeaders, loaderHeaders, parentHeaders }) {
+  return {
+    "Cache-Control": parentHeaders.get("Cache-Control"),
+  };
+}
+
 export default function PricingPage() {
   return (
     <main id='pricing'>

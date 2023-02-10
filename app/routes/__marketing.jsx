@@ -11,6 +11,12 @@ export function loader({ request }) {
   return getUserFromSession(request);
 }
 
+export function headers() {
+  return {
+    "Cache-Control": "max-age=360",
+  };
+}
+
 export default function ExpensesAppLayout() {
   return (
     <>
