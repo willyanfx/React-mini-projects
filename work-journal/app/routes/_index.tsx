@@ -1,5 +1,6 @@
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Form } from "@remix-run/react";
+import { Form, redirect } from "@remix-run/react";
+import prisma from "~/db.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -9,15 +10,23 @@ export const meta: MetaFunction = () => {
 };
 
 const options = [
-  { name: "category", value: "work" },
-  { name: "category", value: "learning" },
-  { name: "category", value: "leisure" },
+  { name: "type", value: "work" },
+  { name: "type", value: "learning" },
+  { name: "type", value: "leisure" },
 ];
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  console.log(Object.fromEntries(formData));
-  return null;
+  const data = Object.fromEntries(formData);
+
+  await prisma.entry.create({
+    data: {
+      date: new Date(data.date),
+      type: data.type,
+      text: data.text,
+    },
+  });
+  return redirect("/");
 }
 
 export default function Index() {
