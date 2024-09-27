@@ -1,7 +1,14 @@
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Form, redirect, useFetcher, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  redirect,
+  useFetcher,
+  useLoaderData,
+} from "@remix-run/react";
 import { format, formatISO, parseISO, startOfWeek } from "date-fns";
 import { useEffect, useRef } from "react";
+import EntryListItem from "~/components/EntryListItem";
 import prisma from "~/db.server";
 
 export const meta: MetaFunction = () => {
@@ -79,10 +86,7 @@ export default function Index() {
   }, [fetcher.state]);
 
   return (
-    <div className='p-10'>
-      <h1 className='text-5xl'>Work Journal</h1>
-      <p>Learning and doing. Update weekly.</p>
-
+    <>
       <div className='my-8 border p-3'>
         <p className='italic'>Create an entry</p>
         <fetcher.Form method='POST'>
@@ -151,7 +155,7 @@ export default function Index() {
                 <p>Work</p>
                 <ul className='list-disc ml-8'>
                   {week.work.map((entry, index) => (
-                    <li key={`${entry.id}-${index}`}>{entry.text}</li>
+                    <EntryListItem key={`${entry.id}-${index}`} entry={entry} />
                   ))}
                 </ul>
               </div>
@@ -161,7 +165,7 @@ export default function Index() {
                 <p>Learning</p>
                 <ul className='list-disc ml-8'>
                   {week.learning.map((entry, index) => (
-                    <li key={`${entry.id}-${index}`}>{entry.text}</li>
+                    <EntryListItem key={`${entry.id}-${index}`} entry={entry} />
                   ))}
                 </ul>
               </div>
@@ -171,7 +175,7 @@ export default function Index() {
                 <p>Leisure</p>
                 <ul className='list-disc ml-8'>
                   {week.leisure.map((entry, index) => (
-                    <li key={`${entry.id}-${index}`}>{entry.text}</li>
+                    <EntryListItem key={`${entry.id}-${index}`} entry={entry} />
                   ))}
                 </ul>
               </div>
@@ -179,6 +183,6 @@ export default function Index() {
           </div>
         </div>
       ))}
-    </div>
+    </>
   );
 }
