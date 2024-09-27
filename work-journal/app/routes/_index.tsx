@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Form, redirect, useFetcher } from "@remix-run/react";
-import { format } from "date-fns";
+import { Form, redirect, useFetcher, useLoaderData } from "@remix-run/react";
+import { format, formatISO, parseISO, startOfWeek } from "date-fns";
 import { useEffect, useRef } from "react";
 import prisma from "~/db.server";
 
@@ -34,12 +34,42 @@ export async function action({ request }: ActionFunctionArgs) {
 export async function loader() {
   const entries = await prisma.entry.findMany();
 
-  return entries;
+  return entries.map((entry) => ({
+    ...entry,
+    date: entry.date.toISOString().substring(0, 10),
+  }));
 }
 
 export default function Index() {
   const fetcher = useFetcher();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const entries = useLoaderData<typeof loader>();
+
+  const entriesByWeek = entries.reduce<Record<string, typeof entries>>(
+    (memo, entry) => {
+      const sunday = startOfWeek(parseISO(entry.date));
+      const sudayString = format(sunday, "yyyy-MM-dd");
+
+      memo[sudayString] ||= [];
+      memo[sudayString].push(entry);
+
+      return memo;
+    },
+    {}
+  );
+
+  const weeks = Object.keys(entriesByWeek)
+    .sort((a, b) => a.localeCompare(b))
+    .map((dateString) => ({
+      dateString,
+      work: entriesByWeek[dateString].filter((entry) => entry.type === "work"),
+      learning: entriesByWeek[dateString].filter(
+        (entry) => entry.type === "learning"
+      ),
+      leisure: entriesByWeek[dateString].filter(
+        (entry) => entry.type === "leisure"
+      ),
+    }));
 
   useEffect(() => {
     if (fetcher.state === "idle" && textareaRef.current) {
@@ -79,7 +109,6 @@ export default function Index() {
                     <input
                       className='mr-1'
                       type='radio'
-                      checked={index === 0}
                       name={`${option.name}`}
                       value={`${option.value}`}
                       required
@@ -111,34 +140,45 @@ export default function Index() {
         </fetcher.Form>
       </div>
 
-      <div className='mt-6'>
-        <p className='font-bold'>
-          Week of February 20<sup>th</sup>
-        </p>
-        <div className='mt-3 space-y-4'>
-          <div>
-            <p>Work</p>
-            <ul className='list-disc ml-8'>
-              <li>First item</li>
-              <li>Second Item</li>
-            </ul>
-          </div>
-          <div>
-            <p>Learnings</p>
-            <ul className='list-disc ml-8'>
-              <li>First item</li>
-              <li>Second Item</li>
-            </ul>
-          </div>
-          <div>
-            <p>Interesting thing</p>
-            <ul className='list-disc ml-8'>
-              <li>First item</li>
-              <li>Second Item</li>
-            </ul>
+      {weeks.map((week) => (
+        <div key={week.dateString} className='mt-6'>
+          <p className='font-bold'>
+            Week of {format(parseISO(week.dateString), "MMMM do")}
+          </p>
+          <div className='mt-3 space-y-4'>
+            {week.work.length > 0 && (
+              <div>
+                <p>Work</p>
+                <ul className='list-disc ml-8'>
+                  {week.work.map((entry, index) => (
+                    <li key={`${entry.id}-${index}`}>{entry.text}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {week.learning.length > 0 && (
+              <div>
+                <p>Learning</p>
+                <ul className='list-disc ml-8'>
+                  {week.learning.map((entry, index) => (
+                    <li key={`${entry.id}-${index}`}>{entry.text}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {week.leisure.length > 0 && (
+              <div>
+                <p>Leisure</p>
+                <ul className='list-disc ml-8'>
+                  {week.leisure.map((entry, index) => (
+                    <li key={`${entry.id}-${index}`}>{entry.text}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 }
