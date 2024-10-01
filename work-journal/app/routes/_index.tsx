@@ -1,14 +1,10 @@
-import type {
-  ActionFunctionArgs,
-  MetaFunction,
-  redirect,
-} from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
+import { redirect, useFetcher, useLoaderData } from "@remix-run/react";
 import { format, parseISO, startOfWeek } from "date-fns";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import EntryForm from "~/components/EntryForm";
 import EntryListItem from "~/components/EntryListItem";
 import prisma from "~/db.server";
-import { options } from "~/utils/objects";
 
 export const meta: MetaFunction = () => {
   return [
@@ -20,6 +16,8 @@ export const meta: MetaFunction = () => {
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
+
+  console.log(data);
 
   await prisma.entry.create({
     data: {
@@ -41,17 +39,15 @@ export async function loader() {
 }
 
 export default function Index() {
-  const fetcher = useFetcher();
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const entries = useLoaderData<typeof loader>();
 
   const entriesByWeek = entries.reduce<Record<string, typeof entries>>(
     (memo, entry) => {
       const sunday = startOfWeek(parseISO(entry.date));
-      const sudayString = format(sunday, "yyyy-MM-dd");
+      const sundayString = format(sunday, "yyyy-MM-dd");
 
-      memo[sudayString] ||= [];
-      memo[sudayString].push(entry);
+      memo[sundayString] ||= [];
+      memo[sundayString].push(entry);
 
       return memo;
     },
@@ -71,74 +67,15 @@ export default function Index() {
       ),
     }));
 
-  useEffect(() => {
-    if (fetcher.state === "idle" && textareaRef.current) {
-      textareaRef.current.value = "";
-      textareaRef.current?.focus();
-    }
-  }, [fetcher.state]);
-
   return (
     <>
       <div className='my-8 border p-3'>
         <p className='italic'>Create an entry</p>
-        <fetcher.Form method='POST'>
-          <fieldset
-            className='disabled:opacity-75'
-            disabled={fetcher.state === "submitting"}
-          >
-            <div className=''>
-              <div className='mt-4'>
-                <input
-                  type='date'
-                  required
-                  name='date'
-                  className='text-gray-600'
-                  defaultValue={format(new Date(), "yyyy-MM-dd")}
-                />
-              </div>
-              <div className='mt-4 space-x-6'>
-                {options.map((option, index) => (
-                  <label
-                    key={`${index}-${option.value}`}
-                    className='capitalize'
-                  >
-                    <input
-                      className='mr-1'
-                      type='radio'
-                      name={`${option.name}`}
-                      value={`${option.value}`}
-                      required
-                    />
-                    {option.value}
-                  </label>
-                ))}
-              </div>
-              <div className='mt-2'>
-                <textarea
-                  name='text'
-                  className='w-full text-gray-700'
-                  rows={3}
-                  required
-                  ref={textareaRef}
-                  placeholder='Type your entry'
-                />
-              </div>
-              <div className='mt-1 text-right'>
-                <button
-                  className='bg-blue-500 text-white font-medium px-4 py-1'
-                  type='submit'
-                >
-                  {fetcher.state === "submitting" ? "Saving ..." : "Save"}
-                </button>
-              </div>
-            </div>
-          </fieldset>
-        </fetcher.Form>
+        <EntryForm />
       </div>
 
       {weeks.map((week) => (
-        <div key={week.dateString} className='mt-6'>
+        <div key={week.dateString}>
           <p className='font-bold'>
             Week of {format(parseISO(week.dateString), "MMMM do")}
           </p>
@@ -146,9 +83,9 @@ export default function Index() {
             {week.work.length > 0 && (
               <div>
                 <p>Work</p>
-                <ul className='list-disc ml-8'>
-                  {week.work.map((entry, index) => (
-                    <EntryListItem key={`${entry.id}-${index}`} entry={entry} />
+                <ul className='ml-8 list-disc'>
+                  {week.work.map((entry) => (
+                    <EntryListItem key={entry.id} entry={entry} />
                   ))}
                 </ul>
               </div>
@@ -156,19 +93,19 @@ export default function Index() {
             {week.learning.length > 0 && (
               <div>
                 <p>Learning</p>
-                <ul className='list-disc ml-8'>
-                  {week.learning.map((entry, index) => (
-                    <EntryListItem key={`${entry.id}-${index}`} entry={entry} />
+                <ul className='ml-8 list-disc'>
+                  {week.learning.map((entry) => (
+                    <EntryListItem key={entry.id} entry={entry} />
                   ))}
                 </ul>
               </div>
             )}
             {week.leisure.length > 0 && (
               <div>
-                <p>Leisure</p>
-                <ul className='list-disc ml-8'>
-                  {week.leisure.map((entry, index) => (
-                    <EntryListItem key={`${entry.id}-${index}`} entry={entry} />
+                <p>Interesting things</p>
+                <ul className='ml-8 list-disc'>
+                  {week.leisure.map((entry) => (
+                    <EntryListItem key={entry.id} entry={entry} />
                   ))}
                 </ul>
               </div>

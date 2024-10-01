@@ -1,12 +1,12 @@
 import { useFetcher } from "@remix-run/react";
 import { format } from "date-fns";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { options } from "~/utils/objects";
 
 export default function EntryForm({
   entry,
 }: {
-  entry: {
+  entry?: {
     date: string;
     type: string;
     text: string;
@@ -15,11 +15,18 @@ export default function EntryForm({
 }) {
   const fetcher = useFetcher();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (fetcher.state === "idle" && textareaRef.current) {
+      textareaRef.current.value = "";
+      textareaRef.current?.focus();
+    }
+  }, [fetcher.state]);
   return (
     <fetcher.Form method='POST'>
       <fieldset
         className='disabled:opacity-75'
-        disabled={fetcher.state === "submitting"}
+        disabled={fetcher.state !== "idle"}
       >
         <div className=''>
           <div className='mt-4'>
@@ -28,7 +35,7 @@ export default function EntryForm({
               required
               name='date'
               className='text-gray-600'
-              defaultValue={entry.date}
+              defaultValue={entry?.date ?? format(new Date(), "yyyy-MM-dd")}
             />
           </div>
           <div className='mt-4 space-x-6'>
@@ -40,7 +47,7 @@ export default function EntryForm({
                   name={`${option.name}`}
                   value={`${option.value}`}
                   required
-                  defaultChecked={entry.type === option.value ? true : false}
+                  defaultChecked={option.value === (entry?.type ?? "work")}
                 />
                 {option.value}
               </label>
@@ -53,7 +60,7 @@ export default function EntryForm({
               rows={3}
               required
               ref={textareaRef}
-              defaultValue={entry.text}
+              defaultValue={entry?.text}
             />
           </div>
           <div className='mt-1 text-right'>
@@ -61,7 +68,7 @@ export default function EntryForm({
               className='bg-blue-500 text-white font-medium px-4 py-1'
               type='submit'
             >
-              {fetcher.state === "submitting" ? "Saving ..." : "Save"}
+              {fetcher.state !== "idle" ? "Saving ..." : "Save"}
             </button>
           </div>
         </div>
