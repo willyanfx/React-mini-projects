@@ -1,15 +1,14 @@
-import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import {
-  Form,
-  Link,
+import type {
+  ActionFunctionArgs,
+  MetaFunction,
   redirect,
-  useFetcher,
-  useLoaderData,
-} from "@remix-run/react";
-import { format, formatISO, parseISO, startOfWeek } from "date-fns";
+} from "@remix-run/node";
+import { useFetcher, useLoaderData } from "@remix-run/react";
+import { format, parseISO, startOfWeek } from "date-fns";
 import { useEffect, useRef } from "react";
 import EntryListItem from "~/components/EntryListItem";
 import prisma from "~/db.server";
+import { options } from "~/utils/objects";
 
 export const meta: MetaFunction = () => {
   return [
@@ -17,12 +16,6 @@ export const meta: MetaFunction = () => {
     { name: "description", content: "Welcome to Work Journal!" },
   ];
 };
-
-const options = [
-  { name: "type", value: "work" },
-  { name: "type", value: "learning" },
-  { name: "type", value: "leisure" },
-];
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();

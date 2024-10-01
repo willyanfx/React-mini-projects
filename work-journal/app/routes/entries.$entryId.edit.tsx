@@ -1,6 +1,30 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  redirect,
+} from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import prisma from "~/db.server";
+
+import EntryForm from "~/components/EntryForm";
+
+export async function action({ request, params }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData);
+
+  await prisma.entry.update({
+    where: {
+      id: Number(params.entryId),
+    },
+    data: {
+      date: new Date(data.date),
+      type: data.type,
+      text: data.text,
+    },
+  });
+
+  return redirect("/");
+}
 
 export async function loader({ params }: LoaderFunctionArgs) {
   if (typeof params.entryId !== "string") {
@@ -28,10 +52,7 @@ export default function EditPage() {
     <div className='mt-4'>
       <p className='font-bold'>Week of {entry.date}</p>
       <div className='mt-3 space-y-4'>
-        <div>
-          <input type='text' name='' id='' value={entry.type} />
-          <input type='text' name='' id='' value={entry.text} />
-        </div>
+        <EntryForm entry={entry} />
       </div>
     </div>
   );
