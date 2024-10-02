@@ -3,27 +3,47 @@ import {
   LoaderFunctionArgs,
   redirect,
 } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import prisma from "~/db.server";
+import { z } from "zod";
+
+const VALUES = ["work", "learning", "leisure"] as const;
+
+const EntryData = z.object({
+  date: z.string().date(),
+  type: z.enum(VALUES),
+  text: z.coerce.string(),
+});
+
+type EntryData = z.infer<typeof EntryData>;
 
 import EntryForm from "~/components/EntryForm";
+import { FormEvent } from "react";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const data = Object.fromEntries(formData);
+  const { _action, date, type, text } = Object.fromEntries(formData);
+  if (_action === "delete") {
+    await prisma.entry.delete({
+      where: {
+        id: Number(params.entryId),
+      },
+    });
+    return redirect("/");
+  } else {
+    await prisma.entry.update({
+      where: {
+        id: Number(params.entryId),
+      },
+      data: {
+        date: EntryData.parse(new Date(data.date)),
+        type: EntryData.parse(data.type),
+        text: EntryData.parse(data.text),
+      },
+    });
 
-  await prisma.entry.update({
-    where: {
-      id: Number(params.entryId),
-    },
-    data: {
-      date: new Date(data.date),
-      type: data.type,
-      text: data.text,
-    },
-  });
-
-  return redirect("/");
+    return redirect("/");
+  }
 }
 
 export async function loader({ params }: LoaderFunctionArgs) {
@@ -47,13 +67,28 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function EditPage() {
   const entry = useLoaderData<typeof loader>();
-  console.log(entry);
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    if (!confirm("Are you Sure")) {
+      e.preventDefault();
+    }
+  }
+
   return (
-    <div className='mt-4'>
-      <p className='font-bold'>Week of {entry.date}</p>
-      <div className='mt-3 space-y-4'>
+    <div className="mt-4">
+      <p className="font-bold">Week of {entry.date}</p>
+      <div className="mt-3 space-y-4">
         <EntryForm entry={entry} />
       </div>
+      <Form method="POST" onSubmit={handleSubmit} className="mt-8">
+        <button
+          name="_action"
+          value="delete"
+          className="underline text-gray-500"
+        >
+          Delete
+        </button>
+      </Form>
     </div>
   );
 }
