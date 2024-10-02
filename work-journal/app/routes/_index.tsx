@@ -6,6 +6,7 @@ import type {
 import { redirect, useFetcher, useLoaderData } from "@remix-run/react";
 import { format, parseISO, startOfWeek } from "date-fns";
 import { useRef } from "react";
+import { coolGray } from "tailwindcss/colors";
 import EntryForm from "~/components/EntryForm";
 import EntryListItem from "~/components/EntryListItem";
 import prisma from "~/db.server";
@@ -50,6 +51,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { entries, session } = useLoaderData<typeof loader>();
+  console.log(session.admin);
 
   const entriesByWeek = entries.reduce<Record<string, typeof entries>>(
     (memo, entry) => {
@@ -79,7 +81,7 @@ export default function Index() {
 
   return (
     <>
-      {session.isAdmin && (
+      {session.admin && (
         <div className="my-8 border p-3">
           <p className="italic">Create an entry</p>
           <EntryForm />
@@ -97,7 +99,11 @@ export default function Index() {
                 <p>Work</p>
                 <ul className="ml-8 list-disc">
                   {week.work.map((entry) => (
-                    <EntryListItem key={entry.id} entry={entry} />
+                    <EntryListItem
+                      key={entry.id}
+                      entry={entry}
+                      canEdit={session.admin}
+                    />
                   ))}
                 </ul>
               </div>
@@ -107,7 +113,11 @@ export default function Index() {
                 <p>Learning</p>
                 <ul className="ml-8 list-disc">
                   {week.learning.map((entry) => (
-                    <EntryListItem key={entry.id} entry={entry} />
+                    <EntryListItem
+                      key={entry.id}
+                      entry={entry}
+                      canEdit={session.admin}
+                    />
                   ))}
                 </ul>
               </div>
@@ -117,7 +127,11 @@ export default function Index() {
                 <p>Interesting things</p>
                 <ul className="ml-8 list-disc">
                   {week.leisure.map((entry) => (
-                    <EntryListItem key={entry.id} entry={entry} />
+                    <EntryListItem
+                      key={entry.id}
+                      entry={entry}
+                      canEdit={session.admin}
+                    />
                   ))}
                 </ul>
               </div>

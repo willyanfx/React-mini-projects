@@ -6,7 +6,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const { email, password } = Object.fromEntries(formData);
 
-  if (email === "w@w.co" && password === "123") {
+  if (email === "goldines@chaves.com" && password === "123") {
     const session = await getSession();
     session.set("admin", true);
 
@@ -30,7 +30,7 @@ export default function LoginPage() {
   const data = useLoaderData<typeof loader>();
   return (
     <div className="mt-8">
-      {data?.isAdmin ? (
+      {data?.admin ? (
         <p>You're signed in</p>
       ) : (
         <Form method="POST">

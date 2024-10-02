@@ -19,10 +19,17 @@ type EntryData = z.infer<typeof EntryData>;
 
 import EntryForm from "~/components/EntryForm";
 import { FormEvent } from "react";
+import { getSession } from "~/session";
 
 export async function action({ request, params }: ActionFunctionArgs) {
+  if (typeof params.entryId !== "string") {
+    throw new Response("Not found", { status: 404 });
+  }
+
   const formData = await request.formData();
+
   const { _action, date, type, text } = Object.fromEntries(formData);
+
   if (_action === "delete") {
     await prisma.entry.delete({
       where: {
@@ -31,14 +38,22 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
     return redirect("/");
   } else {
+    if (
+      typeof date !== "string" ||
+      typeof type !== "string" ||
+      typeof text !== "string"
+    ) {
+      throw new Error("Bad request");
+    }
+
     await prisma.entry.update({
       where: {
         id: Number(params.entryId),
       },
       data: {
-        date: EntryData.parse(new Date(data.date)),
-        type: EntryData.parse(data.type),
-        text: EntryData.parse(data.text),
+        date: new Date(date),
+        type: type,
+        text: text,
       },
     });
 
@@ -46,7 +61,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 }
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   if (typeof params.entryId !== "string") {
     throw new Response("Not Found", { status: 404 });
   }
@@ -59,6 +74,12 @@ export async function loader({ params }: LoaderFunctionArgs) {
     throw new Response("Not Found", { status: 404 });
   }
 
+  const session = await getSession(request.headers.get("cookie"));
+  console.log(session.data.admin);
+  if (!session.data.admin) {
+    throw new Response("Not authenticated", { status: 401 });
+  }
+
   return {
     ...entry,
     date: entry.date.toISOString().substring(0, 10),
@@ -67,6 +88,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function EditPage() {
   const entry = useLoaderData<typeof loader>();
+
+  if (!entry) {
+    throw new Response("Not found", { status: 404 });
+  }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     if (!confirm("Are you Sure")) {
