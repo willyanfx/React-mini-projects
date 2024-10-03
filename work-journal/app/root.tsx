@@ -1,5 +1,6 @@
 import {
   Form,
+  isRouteErrorResponse,
   Link,
   Links,
   Meta,
@@ -8,6 +9,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useRouteError,
 } from "@remix-run/react";
 import type {
   ActionFunctionArgs,
@@ -92,4 +94,30 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return <Outlet />;
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error)) {
+    return (
+      <div className="w-full flex flex-col items-center py-[10%]">
+        <h1 className="text-9xl font-bold bg-gradient-to-r from-blue-300 to-teal-300 via-pink-300 bg-clip-text text-transparent w-min">
+          {error.status}
+        </h1>
+        <p className="text-gray-500 text-lg">{error.data}</p>
+      </div>
+    );
+  } else if (error instanceof Error) {
+    return (
+      <div>
+        <h1>Error</h1>
+        <p>{error.message}</p>
+        <p>The stack trace is:</p>
+        <pre>{error.stack}</pre>
+      </div>
+    );
+  } else {
+    return <h1>Unknown Error</h1>;
+  }
 }
