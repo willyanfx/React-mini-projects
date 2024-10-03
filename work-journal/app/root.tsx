@@ -17,6 +17,7 @@ import type {
 
 import styles from "./tailwind.css?url";
 import { destroySession, getSession } from "./session";
+import { coolGray } from "tailwindcss/colors";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -50,18 +51,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   };
 }
 
-const ErrorResponse = ({ error }: { error: Error }) => {
-  return (
-    <div>
-      <h1>Error</h1>
-      <p>{error.message}</p>
-    </div>
-  );
-};
-
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { session } = useLoaderData<typeof loader>();
-
+  // If the session might be undefined, use optional chaining or provide a default value
+  const { session } = useLoaderData<typeof loader>() || {};
   return (
     <html lang="en">
       <head>

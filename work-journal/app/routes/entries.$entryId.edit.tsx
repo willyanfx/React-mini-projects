@@ -25,7 +25,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (typeof params.entryId !== "string") {
     throw new Response("Not found", { status: 404 });
   }
-
+  const session = await getSession(request.headers.get("cookie"));
+  if (!session.data.admin) {
+    throw new Response("Not authenticated", { status: 401 });
+  }
   const formData = await request.formData();
 
   const { _action, date, type, text } = Object.fromEntries(formData);
@@ -75,7 +78,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   }
 
   const session = await getSession(request.headers.get("cookie"));
-  console.log(session.data.admin);
   if (!session.data.admin) {
     throw new Response("Not authenticated", { status: 401 });
   }
