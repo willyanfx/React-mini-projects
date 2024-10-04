@@ -1,5 +1,6 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { Form, redirect, useLoaderData } from "@remix-run/react";
+import { ActionFunctionArgs, json, LoaderFunctionArgs } from "@remix-run/node";
+import { Form, redirect, useActionData, useLoaderData } from "@remix-run/react";
+import { coolGray } from "tailwindcss/colors";
 import { commitSession, getSession } from "~/session";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -16,7 +17,12 @@ export async function action({ request }: ActionFunctionArgs) {
       },
     });
   } else {
-    return null;
+    return json(
+      {
+        error: "Bad credentials",
+      },
+      401
+    );
   }
 }
 
@@ -28,27 +34,42 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function LoginPage() {
   const data = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
+
+  console.log(actionData?.error);
   return (
     <div className="mt-8">
       {data?.admin ? (
         <p>You're signed in</p>
       ) : (
         <Form method="POST">
-          <input
-            className="text-green-900"
-            type="email"
-            name="email"
-            placeholder="Email"
-          />
-          <input
-            className="text-green-900"
-            type="password"
-            name="password"
-            placeholder="Password"
-          />
-          <button className="bg-blue-500 px-4 py-4 text-white font-medium">
-            Log in
-          </button>
+          <fieldset className="grid-flow-col gap-1">
+            <input
+              className={`text-green-900 border border-slate-700 invalid:border-pink-500 invalid:text-pink-600 ${
+                actionData?.error ? "border-red-500 border-2" : null
+              }`}
+              type="email"
+              name="email"
+              placeholder="Email"
+              required
+            />
+            <input
+              className={`text-green-900 border border-slate-700 invalid:border-pink-500 invalid:text-pink-600 ${
+                actionData?.error ? "border-red-500 border-2" : null
+              }`}
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
+            <button className="bg-blue-500 px-6 py-2 text-white font-medium">
+              Log in
+            </button>
+          </fieldset>
+
+          {actionData?.error === "Bad credentials" && (
+            <p className="text-red-500 font-medium mt-2">{actionData?.error}</p>
+          )}
         </Form>
       )}
     </div>
