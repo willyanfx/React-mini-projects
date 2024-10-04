@@ -3,10 +3,8 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { redirect, useFetcher, useLoaderData } from "@remix-run/react";
+import { redirect, useLoaderData } from "@remix-run/react";
 import { format, parseISO, startOfWeek } from "date-fns";
-import { useRef } from "react";
-import { coolGray } from "tailwindcss/colors";
 import EntryForm from "~/components/EntryForm";
 import EntryListItem from "~/components/EntryListItem";
 import prisma from "~/db.server";
@@ -51,7 +49,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { entries, session } = useLoaderData<typeof loader>();
-  console.log(session.admin);
 
   const entriesByWeek = entries.reduce<Record<string, typeof entries>>(
     (memo, entry) => {
@@ -82,63 +79,68 @@ export default function Index() {
   return (
     <>
       {session.admin && (
-        <div className="my-8 border p-3">
-          <p className="italic">Create an entry</p>
+        <div className="mb-8 rounded-lg border border-gray-700/30 bg-gray-800/50 p-4 lg:mb-20 lg:p-6">
+          <p className="text-sm font-medium text-gray-500 lg:text-base">
+            New entry
+          </p>
+
           <EntryForm />
         </div>
       )}
+      <div className="mt-12 space-y-12 border-l-2 border-sky-500/[.15] pl-5 lg:space-y-20 lg:pl-8">
+        {weeks.map((week) => (
+          <div key={week.dateString} className="relative">
+            <div className="absolute left-[-34px] rounded-full bg-gray-900 p-2 lg:left-[-46px]">
+              <div className="h-[10px] w-[10px] rounded-full border border-sky-500 bg-gray-900" />
+            </div>
 
-      {weeks.map((week) => (
-        <div key={week.dateString}>
-          <p className="font-bold">
-            Week of {format(parseISO(week.dateString), "MMMM do")}
-          </p>
-          <div className="mt-3 space-y-4">
-            {week.work.length > 0 && (
-              <div>
-                <p>Work</p>
-                <ul className="ml-8 list-disc">
-                  {week.work.map((entry) => (
-                    <EntryListItem
-                      key={entry.id}
-                      entry={entry}
-                      canEdit={session.admin}
-                    />
-                  ))}
-                </ul>
-              </div>
-            )}
-            {week.learning.length > 0 && (
-              <div>
-                <p>Learning</p>
-                <ul className="ml-8 list-disc">
-                  {week.learning.map((entry) => (
-                    <EntryListItem
-                      key={entry.id}
-                      entry={entry}
-                      canEdit={session.admin}
-                    />
-                  ))}
-                </ul>
-              </div>
-            )}
-            {week.leisure.length > 0 && (
-              <div>
-                <p>Interesting things</p>
-                <ul className="ml-8 list-disc">
-                  {week.leisure.map((entry) => (
-                    <EntryListItem
-                      key={entry.id}
-                      entry={entry}
-                      canEdit={session.admin}
-                    />
-                  ))}
-                </ul>
-              </div>
-            )}
+            <p className="pt-[5px] text-xs font-semibold uppercase tracking-wider text-sky-500 lg:pt-[3px] lg:text-sm">
+              {format(parseISO(week.dateString), "MMMM d, yyyy")}
+            </p>
+
+            <div className="mt-6 space-y-8 lg:space-y-12">
+              <EntryList
+                entries={week.work}
+                label="Work"
+                canEdit={session.admin}
+              />
+              <EntryList
+                entries={week.learning}
+                label="Learnings"
+                canEdit={session.admin}
+              />
+              <EntryList
+                entries={week.leisure}
+                label="Leisure"
+                canEdit={session.admin}
+              />
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </>
   );
+}
+type Entry = Awaited<ReturnType<typeof loader>>["entries"][number];
+
+function EntryList({
+  entries,
+  label,
+  canEdit,
+}: {
+  entries: Entry[];
+  label: string;
+  canEdit: boolean;
+}) {
+  return entries.length > 0 ? (
+    <div>
+      <p className="font-semibold text-white">{label}</p>
+
+      <ul className="mt-4 space-y-6">
+        {entries.map((entry) => (
+          <EntryListItem key={entry.id} entry={entry} canEdit={canEdit} />
+        ))}
+      </ul>
+    </div>
+  ) : null;
 }
