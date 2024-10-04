@@ -1,6 +1,5 @@
 import { ActionFunctionArgs, json, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, redirect, useActionData, useLoaderData } from "@remix-run/react";
-import { coolGray } from "tailwindcss/colors";
 import { commitSession, getSession } from "~/session";
 
 export async function action({ request }: ActionFunctionArgs) {

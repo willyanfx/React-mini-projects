@@ -19,7 +19,6 @@ import type {
 
 import styles from "./tailwind.css?url";
 import { destroySession, getSession } from "./session";
-import { coolGray } from "tailwindcss/colors";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -56,37 +55,51 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export function Layout({ children }: { children: React.ReactNode }) {
   // If the session might be undefined, use optional chaining or provide a default value
   const { session } = useLoaderData<typeof loader>() || {};
+
   return (
-    <html lang="en">
+    <html lang='en'>
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet='utf-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Meta />
         <Links />
       </head>
-      <body>
-        <div className="p-10">
-          <div className="flex justify-between">
-            <div>
-              <h1 className="text-5xl">
-                <Link to={"/"}>Work Journal</Link>
-              </h1>
-              <p>Learning and doing. Update weekly.</p>
+      <body className='mx-auto max-w-xl p-4 lg:max-w-7xl'>
+        <header>
+          <div className='flex items-center justify-between lg:border-b lg:border-gray-800 lg:pt-1 lg:pb-5'>
+            <p className='text-sm uppercase lg:text-lg'>
+              <span className='text-gray-500'>Self</span>
+              <span className='font-semibold text-gray-200'>Journal</span>
+            </p>
+
+            <div className='text-sm font-medium text-gray-500 hover:text-gray-200'>
+              {session?.admin ? (
+                <Form method='post'>
+                  <button>Log out</button>
+                </Form>
+              ) : (
+                <Link to='/login'>Log in</Link>
+              )}
             </div>
-            {session?.admin ? (
-              <Form method="post">
-                <button>Logout</button>
-              </Form>
-            ) : (
-              <Link to={"/login"}>Login </Link>
-            )}
           </div>
 
-          {children}
+          <div className='my-20 lg:my-28'>
+            <div className='text-center'>
+              <h1 className='text-5xl font-semibold tracking-tighter text-white lg:text-7xl'>
+                <Link to='/'>Work Journal</Link>
+              </h1>
 
-          <ScrollRestoration />
-          <Scripts />
-        </div>
+              <p className='mt-2 tracking-tight text-gray-500 lg:mt-4 lg:text-2xl'>
+                Doings and learnings. Updated weekly.
+              </p>
+            </div>
+          </div>
+        </header>
+
+        <main className='mx-auto max-w-3xl'>{children}</main>
+
+        <ScrollRestoration />
+        <Scripts />
       </body>
     </html>
   );
@@ -101,11 +114,11 @@ export function ErrorBoundary() {
 
   if (isRouteErrorResponse(error)) {
     return (
-      <div className="w-full flex flex-col items-center py-[10%]">
-        <h1 className="text-9xl font-bold bg-gradient-to-r from-blue-300 to-teal-300 via-pink-300 bg-clip-text text-transparent w-min">
+      <div className='w-full flex flex-col items-center py-[10%]'>
+        <h1 className='text-9xl font-bold bg-gradient-to-r from-blue-300 to-teal-300 via-pink-300 bg-clip-text text-transparent w-min'>
           {error.status}
         </h1>
-        <p className="text-gray-500 text-lg">{error.data}</p>
+        <p className='text-gray-500 text-lg'>{error.data}</p>
       </div>
     );
   } else if (error instanceof Error) {

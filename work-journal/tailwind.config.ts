@@ -18,7 +18,7 @@ export default {
         ],
       },
       colors: {
-        gray: colors.neutral,
+        gray: colors.zinc,
       },
     },
   },

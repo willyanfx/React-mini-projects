@@ -4,4 +4,4 @@ interface inputForm {
   text: string;
 }
 
-export { inputForm };
+export { inputForm, Entry };
