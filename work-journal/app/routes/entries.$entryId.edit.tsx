@@ -103,19 +103,26 @@ export default function EditPage() {
 
   return (
     <div className="mt-4">
-      <p className="font-bold">Week of {entry.date}</p>
-      <div className="mt-3 space-y-4">
+      <p className="mb-8 rounded-lg border border-gray-700/30 bg-gray-800/50 p-4 lg:mb-20 lg:p-6">
+        <p className="text-sm font-medium text-gray-500 lg:text-base">
+          Edit entry
+        </p>
+
         <EntryForm entry={entry} />
+      </p>
+      <div className="mt-3 space-y-4"></div>
+
+      <div className="mt-8">
+        <Form method="post" onSubmit={handleSubmit}>
+          <button
+            name="_action"
+            value="delete"
+            className="text-sm text-gray-600 underline"
+          >
+            Delete this entry...
+          </button>
+        </Form>
       </div>
-      <Form method="POST" onSubmit={handleSubmit} className="mt-8">
-        <button
-          name="_action"
-          value="delete"
-          className="underline text-gray-500"
-        >
-          Delete
-        </button>
-      </Form>
     </div>
   );
 }
