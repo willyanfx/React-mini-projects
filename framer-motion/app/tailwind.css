@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --whit: #fff;
+  --slate-200: #e2e8f0;
+  --slate-400: #94a3b8;
+  --blue-500: #3b82f6;
+}
