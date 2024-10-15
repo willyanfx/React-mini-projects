@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { color, motion } from "framer-motion";
 
 export const meta: MetaFunction = () => {
   return [
@@ -60,21 +60,30 @@ function Step({ step, currentStep }: { step: number; currentStep: number }) {
       ? "inactive"
       : "complete";
 
+  const variants = {
+    inactive: {
+      backgroundColor: "var(--white)",
+      borderColor: "var(--slate-200)",
+      color: "var(--slate-400)",
+    },
+    active: {
+      backgroundColor: "var(--white)",
+      borderColor: "var(--blue-500)",
+      color: "var(--blue-500)",
+    },
+    complete: {
+      backgroundColor: "var(--blue-500)",
+      borderColor: "var(--blue-500)",
+      color: "var(--blue-500)",
+    },
+  };
+  console.log(status);
   return (
     <motion.div
       initial={false}
-      animate={{
-        backgroundColor: status === "complete" ? "rgb(59 130 246)" : "#fff",
-        borderColor:
-          status === "complete" || status === "active"
-            ? "rgb(59 130 246)"
-            : "rgb(226 232 240)",
-        color:
-          status === "complete" || status === "active"
-            ? "rgb(59 130 246)"
-            : "rgb(148 163 184)",
-      }}
-      transition={{ duration: 1 }}
+      animate={status}
+      variants={variants}
+      // transition={{ duration: 1 }}
       className={`flex h-10 w-10 items-center justify-center rounded-full border-2 font-semibold`}
     >
       <div className='flex items-center justify-center'>
