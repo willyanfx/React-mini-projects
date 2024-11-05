@@ -4,7 +4,7 @@
 {#snippet entryListItem({ entry, canEdit }: { entry: any; canEdit?: boolean })}
 	<li>
 		{entry.text}
-		{#if canEdit}<a>Edit</a>{/if}
+		{#if canEdit}<a href={`/entries/${entry.id}/edit`}>Edit</a>{/if}
 	</li>
 {/snippet}
 
