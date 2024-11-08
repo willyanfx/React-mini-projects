@@ -1,16 +1,41 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+
 const state = reactive({
   job: {},
   isLoading: true,
 })
 
 const route = useRoute()
+const router = useRouter()
+
 let id = ''
 if (route.params.id) {
   id = String(route?.params?.id)
+}
+
+async function deleteJob() {
+  try {
+    fetch(`/api/jobs/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Resource deleted successfully')
+        } else {
+          console.error('Delete failed')
+        }
+        router.push('/jobs')
+      })
+      .catch((error) => {
+        console.error('Error:', error)
+      })
+  } catch (error) {}
 }
 
 onMounted(async () => {
@@ -96,6 +121,7 @@ onMounted(async () => {
               >Edit Job</RouterLink
             >
             <button
+              @click="deleteJob"
               class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
             >
               Delete Job
