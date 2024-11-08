@@ -2,6 +2,7 @@
 import { onMounted, reactive } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+
 const state = reactive({
   job: {},
   isLoading: true,
