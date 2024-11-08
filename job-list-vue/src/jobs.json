@@ -83,6 +83,48 @@
         "contactEmail": "contact@ipsumlorem.com",
         "contactPhone": "555-555-5555"
       }
+    },
+    {
+      "id": "50b9",
+      "type": "Remote",
+      "title": "Medge Hamilton",
+      "description": "Et velit laboris ut ",
+      "salary": "$50K - $60K",
+      "location": "Et voluptatem dolor ",
+      "company": {
+        "name": "Dominguez Sawyer Traders",
+        "description": "Ex ea eveniet sed t",
+        "contactEmail": "tuqoqazasa@mailinator.com",
+        "contactPhone": "+1 (957) 296-1532"
+      }
+    },
+    {
+      "id": "b893",
+      "type": "Internship",
+      "title": "Burke Rodriquez",
+      "description": "Ut a anim dolor eum ",
+      "salary": "Under $50K",
+      "location": "Saepe tempore non b",
+      "company": {
+        "name": "Hoover and Valencia LLC",
+        "description": "Aut amet in digniss",
+        "contactEmail": "puhi@mailinator.com",
+        "contactPhone": "+1 (697) 365-7136"
+      }
+    },
+    {
+      "id": "5c7f",
+      "type": "Part-Time",
+      "title": "Tamekah Stein",
+      "description": "Beatae ea tenetur si",
+      "salary": "$90K - $100K",
+      "location": "Aut fugit cupiditat",
+      "company": {
+        "name": "Morgan and Goodman LLC",
+        "description": "Suscipit repudiandae",
+        "contactEmail": "rowo@mailinator.com",
+        "contactPhone": "+1 (366) 873-8975"
+      }
     }
   ]
 }
